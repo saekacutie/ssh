@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  prvtspyyy-ssh:
+    build: .
+    image: prvtspyyy-ssh:latest
+    container_name: prvtspyyy_container
+    ports:
+      - "8080:8080"  # Web Dashboard & WebSocket Bridge
+    environment:
+      - PORT=8080
+      - K_SERVICE=Prvtspyyy404-Local
+    restart: always
