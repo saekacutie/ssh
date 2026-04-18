@@ -52,9 +52,15 @@ echo -e "${G}${BOLD}[DONE]${OFF} ${C}${BOLD}│${OFF}"
 echo -e "${C}${BOLD}└──────────────────────────────────────────────────────────┘${OFF}"
 
 # --- 4. EXTRACTING REAL run.app URL ---
-# This fixes the missing URL problem
-URL=$(gcloud run services describe $SVC_NAME --region us-central1 --format='value(status.url)')
-HOST=${URL#https://}
+
+if [ $? -eq 0 ]; then
+    SERVICE_URL=$(gcloud run services describe "$SERVICE_NAME" --region "$REGION" --format='value(status.url)' 2>/dev/null)
+    CLEAN_HOST=$(echo "$SERVICE_URL" | sed 's|https://||')
+    echo -e "${C_SUCCESS}[✔]${RESET} Deployment complete"
+else
+    echo -e "${C_ERROR}[✘]${RESET} Deployment failed. Check the error message above."
+    exit 1
+fi
 
 # --- 5. FINAL 3D SUCCESS BANNER ---
 clear
@@ -64,7 +70,7 @@ echo -e "${G}${BOLD}█${OFF}    ${G}${B}${BOLD}CREATION SSH ACCOUNT SUCCESSFUL!
 echo -e "${G}${BOLD}█${OFF}                                                          ${G}${BOLD}█${OFF}"
 echo -e "${G}${BOLD}████████████████████████████████████████████████████████████${OFF}"
 echo -e "${W}${BOLD}│${OFF}"
-echo -e "${W}${BOLD}├── ${C}${BOLD}HOST:      ${W}${BOLD}${HOST}${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}HOST:      ${W}${BOLD}$"$SERVICE_URL"${OFF}"
 echo -e "${W}${BOLD}├── ${C}${BOLD}PORT:      ${G}${BOLD}443${OFF}"
 echo -e "${W}${BOLD}├── ${C}${BOLD}USER:      ${G}${BOLD}root${OFF}"
 echo -e "${W}${BOLD}├── ${C}${BOLD}PASS:      ${G}${BOLD}prvtspyyy${OFF}"
