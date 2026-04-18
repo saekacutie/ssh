@@ -1,64 +1,75 @@
 #!/bin/bash
 
-# --- UI COLORS ---
-C='\033[1;36m'  # Cyan
-P='\033[1;35m'  # Pink
-G='\033[1;32m'  # Green
-R='\033[1;31m'  # Red
-B='\033[5m'     # Blink
-W='\033[1;37m'  # White
+# --- ADVANCED UI COLORS ---
+C='\033[1;36m'   # CYAN
+P='\033[1;35m'   # PINK
+G='\033[1;32m'   # GREEN
+R='\033[1;31m'   # RED
+W='\033[1;37m'   # WHITE
+B='\033[5m'      # BLINK
+BOLD='\033[1m'
 OFF='\033[0m'
 
 clear
 
-# 1. THE GLOWING BANNER
-echo -e "${C}${B}"
-echo "  _____                _                             _  _    ___  _  _   "
-echo " |  __ \              | |                           | || |  / _ \| || |  "
-echo " | |__) |_ ____   _| |_ ___ _ __  _   _ _   _ _   _| || |_| | | | || |_ "
-echo " |  ___/| '__\ \ / / __/ __| '_ \| | | | | | | | | |__   _| | | |__   _|"
-echo " | |    | |   \ V /| |_\__ \ |_) | |_| | |_| | |_| |  | | | |_| |  | |  "
-echo " |_|    |_|    \_/  \__|___/ .__/ \__, |\__, |\__, |  |_|  \___/   |_|  "
-echo -e "${OFF}"
-echo -e "${P}      >> PRVTSPYYY404 DEPLOYMENT SYSTEM << ${OFF}\n"
+# --- 1. IMPROVED 3D BANNER ---
+echo -e "${C}${BOLD}"
+echo "  ██████╗ ██████╗ ██╗   ██╗████████╗███████╗██████╗ ██╗   ██╗██╗   ██╗██╗   ██╗"
+echo "  ██╔══██╗██╔══██╗██║   ██║╚══██╔══╝██╔════╝██╔══██╗╚██╗ ██╔╝╚██╗ ██╔╝╚██╗ ██╔╝"
+echo "  ██████╔╝██████╔╝██║   ██║   ██║   ███████╗██████╔╝ ╚████╔╝  ╚████╔╝  ╚████╔╝ "
+echo "  ██╔═══╝ ██╔══██╗╚██╗ ██╔╝   ██║   ╚════██║██╔═══╝   ╚██╔╝    ╚██╔╝    ╚██╔╝  "
+echo "  ██║     ██║  ██║ ╚████╔╝    ██║   ███████║██║        ██║      ██║      ██║   "
+echo "  ╚═╝     ╚═╝  ╚═╝  ╚═══╝     ╚═╝   ╚══════╝╚═╝        ╚═╝      ╚═╝      ╚═╝   "
+echo -e "${P}${BOLD}                     [ made by Saeka Torjip - SSH ] ${OFF}\n"
 
-# 2. API & ACCOUNT CHECKS
-echo -e "${C}> CHECKING APIS...${OFF}"
-echo -e "${C}> ENABLING REQUIRED APIS...${OFF}"
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com --quiet > /dev/null 2>&1
-echo -e "${C}> CHECKING ACCOUNT INFO...${OFF}"
+# --- 2. INITIALIZATION UI ---
+echo -e "${W}${BOLD}┌──────────────────────────────────────────────────────────┐${OFF}"
+echo -e "${W}${BOLD}│${OFF} ${C}${BOLD}SYSTEM STATUS:${OFF}  ${G}${BOLD}READY${OFF}                                ${W}${BOLD}│${OFF}"
+echo -e "${W}${BOLD}│${OFF} ${C}${BOLD}REGION:${OFF}         ${R}${BOLD}US-CENTRAL1 (LOCKED)${OFF}               ${W}${BOLD}│${OFF}"
+echo -e "${W}${BOLD}└──────────────────────────────────────────────────────────┘${OFF}\n"
+
+echo -e "${C}${BOLD}> ENABLING:${OFF} ${W}Google Cloud Run API...${OFF}"
+gcloud services enable run.googleapis.com --quiet > /dev/null 2>&1
+echo -e "${C}${BOLD}> ENABLING:${OFF} ${W}Google Cloud Build API...${OFF}"
+gcloud services enable cloudbuild.googleapis.com --quiet > /dev/null 2>&1
+echo -e "${C}${BOLD}> CHECKING:${OFF} ${W}Identity & Access Management...${OFF}"
 sleep 1
 
-echo -e "\n${R}${B}Locked to Region: US-CENTRAL1${OFF}"
-read -p "$(echo -e ${G}"(Default: prvtspyyy) Enter Service Name: "${OFF})" SVC_NAME
+echo -en "\n${P}${BOLD}SERVICE NAME (Default: prvtspyyy): ${OFF}"
+read SVC_NAME
 SVC_NAME=${SVC_NAME:-prvtspyyy}
 
-# 3. COMPILING LOGIC
-echo -e "\n${P}>> STARTING CREATION PROCESS...${OFF}"
+# --- 3. DEPLOYMENT ENGINE ---
+echo -e "\n${C}${BOLD}┌─${OFF} ${P}${BOLD}DEPLOYMENT IN PROGRESS${OFF} ${C}${BOLD}─────────────────────────────┐${OFF}"
 
-echo -en "${C}> INJECTING CORE PROTOCOLS... ${OFF}"
-# Silence the build logs
+echo -en "${C}${BOLD}│${OFF} ${W}COMPILING PROJECT...       ${OFF}"
 gcloud builds submit --tag gcr.io/$GOOGLE_CLOUD_PROJECT/$SVC_NAME . --quiet > /dev/null 2>&1
-echo -e "${G}SUCCESS!${OFF}"
+echo -e "${G}${BOLD}[DONE]${OFF} ${C}${BOLD}│${OFF}"
 
-echo -en "${C}> DEPLOYING TO GOOGLE CLOUD... ${OFF}"
+echo -en "${C}${BOLD}│${OFF} ${W}INJECTING TO CLOUD RUN...  ${OFF}"
 gcloud run deploy $SVC_NAME --image gcr.io/$GOOGLE_CLOUD_PROJECT/$SVC_NAME --region us-central1 --allow-unauthenticated --quiet > /dev/null 2>&1
-echo -e "${G}SUCCESS!${OFF}"
+echo -e "${G}${BOLD}[DONE]${OFF} ${C}${BOLD}│${OFF}"
+echo -e "${C}${BOLD}└──────────────────────────────────────────────────────────┘${OFF}"
 
-# 4. FINAL SUCCESS SCREEN
-clear
+# --- 4. EXTRACTING REAL run.app URL ---
+# This fixes the missing URL problem
 URL=$(gcloud run services describe $SVC_NAME --region us-central1 --format='value(status.url)')
-echo -e "${G}====================================================${OFF}"
-echo -e "${G}${B}       CREATION SSH ACCOUNT SUCCESSFUL!            ${OFF}"
-echo -e "${G}====================================================${OFF}"
-echo -e "${C}BANNER:    ${R}${B}Prvtspyyy404 Protocols${OFF}"
-echo -e "${C}PROTOCOL:  ${W}SSH over WebSocket (TLS)${OFF}"
-echo -e "${C}REGION:    ${W}US-CENTRAL1${OFF}"
-echo -e "${C}SSH HOST:  ${G}${URL#https://}${OFF}"
-echo -e "${C}SSH PORT:  ${G}443${OFF}"
-echo -e "${C}SSH USER:  ${G}root${OFF}"
-echo -e "${C}SSH PASS:  ${G}prvtspyyy${OFF}"
-echo -e "${C}STATUS:    ${G}ACTIVE${OFF}"
-echo -e "${G}====================================================${OFF}"
-echo -e "${P}CONTACT Saeka Tojirp on Facebook for concerns${OFF}"
-echo -e "${G}====================================================${OFF}"
+HOST=${URL#https://}
+
+# --- 5. FINAL 3D SUCCESS BANNER ---
+clear
+echo -e "${G}${BOLD}████████████████████████████████████████████████████████████${OFF}"
+echo -e "${G}${BOLD}█${OFF}                                                          ${G}${BOLD}█${OFF}"
+echo -e "${G}${BOLD}█${OFF}    ${G}${B}${BOLD}CREATION SSH ACCOUNT SUCCESSFUL!${OFF}                      ${G}${BOLD}█${OFF}"
+echo -e "${G}${BOLD}█${OFF}                                                          ${G}${BOLD}█${OFF}"
+echo -e "${G}${BOLD}████████████████████████████████████████████████████████████${OFF}"
+echo -e "${W}${BOLD}│${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}HOST:      ${W}${BOLD}${HOST}${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}PORT:      ${G}${BOLD}443${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}USER:      ${G}${BOLD}root${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}PASS:      ${G}${BOLD}prvtspyyy${OFF}"
+echo -e "${W}${BOLD}├── ${C}${BOLD}PROTO:     ${P}${BOLD}SSH Over WebSocket (TLS)${OFF}"
+echo -e "${W}${BOLD}└── ${C}${BOLD}REGION:    ${W}${BOLD}US-CENTRAL1${OFF}"
+echo -e "${G}${BOLD}============================================================${OFF}"
+echo -e "${P}${BOLD}  CONTACT SAEKA TOJIRP ON FACEBOOK FOR CONCERNS & COMPLAINS ${OFF}"
+echo -e "${G}${BOLD}============================================================${OFF}"
