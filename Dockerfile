@@ -1,6 +1,6 @@
 FROM alpine:latest
 RUN apk add --no-cache openssh bash python3 py3-pip \
-    && pip3 install websockify flask --break-system-packages \
+    && pip3 install websockify --break-system-packages \
     && ssh-keygen -A \
     && echo "prvtspyyy:404notfound" | chpasswd
 COPY . .

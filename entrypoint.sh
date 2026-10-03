@@ -12,7 +12,6 @@ echo -e "\n\033[1;31m\033[5m Prvtspyyy404 Protocols \033[0m\n" > /etc/motd
 
 # Start Daemons
 /usr/sbin/sshd
-python3 app.py &
 
-# Start WebSocket Bridge
-exec websockify 0.0.0.0:8081 127.0.0.1:2222 --heartbeat 30
+# Start WebSocket Bridge on $PORT (Cloud Run injects PORT; default 8080)
+exec websockify 0.0.0.0:${PORT:-8080} 127.0.0.1:2222 --heartbeat 30

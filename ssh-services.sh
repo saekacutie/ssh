@@ -14,9 +14,6 @@ echo -e "\n\033[1;31m\033[5m Prvtspyyy404 Protocols \033[0m\n" > /etc/motd
 # 3. Start SSH Daemon
 /usr/sbin/sshd
 
-# 4. Start the Web Dashboard in the background
-python3 app.py &
-
 # 5. Start the Websocket Bridge (Tunnel)
-# We use port 8081 internally for the tunnel, or share the main port
-exec websockify 0.0.0.0:8081 127.0.0.1:2222 --heartbeat 30
+# Tunnel listens on $PORT (Cloud Run injects PORT; defaults to 8080)
+exec websockify 0.0.0.0:${PORT:-8080} 127.0.0.1:2222 --heartbeat 30
